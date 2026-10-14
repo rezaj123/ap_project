@@ -2,6 +2,7 @@ package Controller;
 
 import dao.OrderDao;
 import dto.OrderDto;
+import enums.OrderDeliveryStatus;
 import enums.OrderStatus;
 import enums.Role;
 import model.Deliveryman;
@@ -48,6 +49,7 @@ public class DeliveryController {
                 if (order.getDeliveryman() != null) {
                     throw new ConflictException("Delivery already assigned to another courier.");
                 }
+                order.setDeliveryStatus(OrderDeliveryStatus.ACCEPTED);
                 order.setDeliveryman(deliveryman);
                 break;
 
@@ -59,6 +61,7 @@ public class DeliveryController {
                     throw new ConflictException("Order is not ready for pickup or has passed this stage.");
                 }
                 System.out.println("Courier has received the order from the restaurant.");
+                order.setDeliveryStatus(OrderDeliveryStatus.DELIVERED);
                 break;
 
             case "delivered":
@@ -68,6 +71,7 @@ public class DeliveryController {
                 if (order.getStatus() != OrderStatus.ON_THE_WAY) {
                     throw new ConflictException("Order cannot be marked as delivered from its current state.");
                 }
+                order.setDeliveryStatus(OrderDeliveryStatus.DELIVERED);
                 order.setStatus(OrderStatus.COMPLETED);
                 break;
 
@@ -91,16 +95,33 @@ public class DeliveryController {
 
     private OrderDto.OrderSchemaDTO mapOrderToSchemaDTO(Order order) {
         if (order == null) return null;
-        List<Integer> itemIds = order.getItems().stream().map(OrderItem::getItemId).collect(Collectors.toList());
+
+        List<Integer> itemIds = order.getItems().stream()
+                .map(OrderItem::getItemId)
+                .collect(Collectors.toList());
+
+        Long reviewId = (order.getReview() != null) ? order.getReview().getId() : null;
+
         return new OrderDto.OrderSchemaDTO(
-                order.getId(), order.getDeliveryAddress(), order.getCustomer().getId(),
-                order.getRestaurant().getId(), (order.getCoupon() != null) ? order.getCoupon().getId() : null,
-                itemIds, order.getSubtotalPrice(), order.getTaxFee(), order.getDeliveryFee(),
-                order.getAdditionalFee(), order.getTotalPrice(),
+                order.getId(),
+                order.getDeliveryAddress(),
+                order.getCustomer().getId(),
+                order.getRestaurant().getId(),
+                (order.getCoupon() != null) ? order.getCoupon().getId() : null,
+                itemIds,
+                order.getSubtotalPrice(),
+                order.getTaxFee(),
+                order.getDeliveryFee(),
+                order.getAdditionalFee(),
+                order.getTotalPrice(),
                 (order.getDeliveryman() != null) ? order.getDeliveryman().getId() : null,
-                order.getStatus().name(), order.getCreatedAt(), order.getUpdatedAt()
+                order.getStatus().name(),
+                order.getCreatedAt(),
+                order.getUpdatedAt(),
+                reviewId
         );
     }
+
 
     public static class NotFoundException extends RuntimeException { public NotFoundException(String message) { super(message); } }
     public static class ConflictException extends RuntimeException { public ConflictException(String message) { super(message); } }

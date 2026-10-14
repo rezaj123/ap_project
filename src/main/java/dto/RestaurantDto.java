@@ -82,6 +82,7 @@ public class RestaurantDto {
             @JsonProperty("review_id") long id,
             @JsonProperty("rating") Integer rating,//1-5
             @JsonProperty("comment") String comment,
+            @JsonProperty("reply")  String reply,
             @JsonProperty("base64Images") List<String> base64Images,
             @JsonProperty("createdAt") String createdAt
             ){}
@@ -92,4 +93,10 @@ public class RestaurantDto {
             @JsonProperty("total_price") BigDecimal totalPriceForItem,
             @JsonProperty("quantity") int quantity
     ){}
+
+    public record IncomeStatistics(
+            @JsonProperty("year") Integer year,
+            @JsonProperty("month") Integer month,
+            @JsonProperty("income") BigDecimal income)
+    {}
 }

@@ -31,11 +31,11 @@ public class Order {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
     @Column(name="ordersitems")
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> items = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -79,7 +79,7 @@ public class Order {
     @JoinColumn(name = "deliveryman_id")
     private Deliveryman deliveryman;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Review review;
 
     @CreationTimestamp
@@ -169,7 +169,7 @@ public class Order {
                         this.status = OrderStatus.COMPLETED;
                         break;
                     default:
-                        this.status = OrderStatus.ON_THE_WAY; // it may have some nuances//
+                        this.status = OrderStatus.ON_THE_WAY;
                 }
         }
     }
